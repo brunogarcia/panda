@@ -1,0 +1,23 @@
+{
+  "name": "Panda",
+  "version": "0.0.1",
+  "authors": [
+    "Eva Santos <soy@evasantos.com>",
+    "Bruno Garcia <bruno@garciaechegaray.com>"
+  ],
+  "description": "Panda",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1",
+    "PreloadJS": "~0.6.1",
+    "SoundJS": "~0.6.1"
+  }
+}
