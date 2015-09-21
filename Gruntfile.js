@@ -2,43 +2,20 @@ module.exports = function(grunt) {
 
 grunt.initConfig({
 
-    'sass': {
-        dist: {
-            options: {
-                style: 'compressed'
-            },
-            files: {
-                'dist/assets/css/main.css': 'dev/assets/scss/main.scss'
-            }
-        },
-        dev: {
-            options: {
-                style: 'expanded'
-            },
-            files: {
-                'dev/assets/css/main.css': 'dev/assets/scss/main.scss'
-            }
-        }
+    // Project settings
+    'config': {
+
+        // Configurable paths
+        dev: 'dev',
+        dist: 'dist',
+        tmp: 'tmp'
     },
 
-    'watch': {
-        css: {
-            files: 'dev/assets/scss/*.scss',
-            tasks: ['sass:dev']
-        },
-        livereload: {
-            options: {
-                livereload: '<%= connect.options.livereload %>'
-            },
-            files: [
-                'dev/{,*/}*.html',
-                'dev/assets/css/{,*/}*',
-                'dev/assets/img/{,*/}*',
-                'dev/assets/js/{,*/}*.js'
-            ]
-        }
-    },
-
+    /*
+        Connect
+        Start a static web server
+        https://github.com/gruntjs/grunt-contrib-connect
+    */
     'connect': {
         options: {
             port: 9000,
@@ -50,27 +27,129 @@ grunt.initConfig({
             options: {
                 middleware: function(connect) {
                     return [
-                        connect.static('dev'),
+                        connect.static('<%= config.dev %>'),
                     ];
                 }
             }
         }
     },
 
+    /*
+        Watch
+        Run tasks whenever watched files change
+        https://www.npmjs.com/package/grunt-contrib-watch
+    */
+    'watch': {
+        css: {
+            files: '<%= config.dev %>/assets/scss/*.scss',
+            tasks: ['sass:dev']
+        },
+        livereload: {
+            options: {
+                livereload: '<%= connect.options.livereload %>'
+            },
+            files: [
+                '<%= config.dev %>/{,*/}*.html',
+                '<%= config.dev %>/assets/css/{,*/}*',
+                '<%= config.dev %>/assets/img/{,*/}*',
+                '<%= config.dev %>/assets/js/{,*/}*.js'
+            ]
+        }
+    },
+
+    /*
+        Sass
+        Compile Sass to CSS
+        https://www.npmjs.com/package/grunt-contrib-sass
+    */
+    'sass': {
+        dist: {
+            options: {
+                style: 'compressed'
+            },
+            files: {
+                '<%= config.dist %>/assets/css/main.css': '<%= config.dev %>/assets/scss/main.scss'
+            }
+        },
+        dev: {
+            options: {
+                style: 'expanded'
+            },
+            files: {
+                '<%= config.dev %>/assets/css/main.css': '<%= config.dev %>/assets/scss/main.scss'
+            }
+        }
+    },
+
+    /*
+        Clean
+        Clear files and folders
+        https://github.com/gruntjs/grunt-contrib-clean
+    */
+    'clean': ['<%= config.dist %>', '<%= config.tmp %>'],
+
+    /*
+        Copy
+        Copy files and folders.
+        https://github.com/gruntjs/grunt-contrib-copy
+    */
+    'copy': {
+        main: {
+            files: [
+            {
+                'expand': true,
+                'flatten': true,
+                'src': ['<%= config.dev %>/favicon.ico'],
+                'dest': '<%= config.dist %>/',
+                'filter': 'isFile'
+            },
+            {
+                'expand': true,
+                'cwd': '<%= config.dev %>/assets/',
+                'src': ['**'],
+                'dest': '<%= config.dist %>/assets/'
+            }
+            ]
+        },
+    },
+
+    /*
+        Uglify
+        Minify files with UglifyJS
+        https://github.com/gruntjs/grunt-contrib-uglify
+    */
     'uglify': {
         my_target: {
             files: {
-                'dist/assets/js/main.min.js':
+                '<%= config.dist %>/assets/js/main.min.js':
                 [
-                    'dev/assets/js/vendors/jquery.js',
-                    'dev/assets/js/vendors/preloadjs.js',
-                    'dev/assets/js/vendors/soundjs.js',
-                    'dev/assets/js/main.js'
+                    '<%= config.dev %>/assets/js/vendors/jquery.js',
+                    '<%= config.dev %>/assets/js/vendors/preloadjs.js',
+                    '<%= config.dev %>/assets/js/vendors/soundjs.js',
+                    '<%= config.dev %>/assets/js/main.js'
                 ]
             }
         }
     },
 
+    /*
+        Process HTML
+        Process html files at build time to modify them depending on the release environment
+        https://www.npmjs.com/package/grunt-processhtml
+    */
+    'processhtml': {
+        dist: {
+            files: {
+                '<%= config.tmp %>/index.html': ['<%= config.dev %>/index.html']
+            }
+        }
+    },
+
+    /*
+        HTML Min
+        Minify HTML
+        https://github.com/gruntjs/grunt-contrib-htmlmin
+    */
     'htmlmin': {
         dist: {
             options: {
@@ -78,56 +157,36 @@ grunt.initConfig({
                 collapseWhitespace: true
             },
             files: {
-                'dist/index.html': 'tmp/index.html'
+                '<%= config.dist %>/index.html': '<%= config.tmp %>/index.html'
             }
         },
     },
 
-    'copy': {
-        main: {
-            files: [
-            {
-                'expand': true,
-                'flatten': true,
-                'src': ['dev/favicon.ico'],
-                'dest': 'dist/',
-                'filter': 'isFile'
-            },
-            {
-                'expand': true,
-                'cwd': 'dev/assets/',
-                'src': ['**'],
-                'dest': 'dist/assets/'
-            }
-            ]
-        },
-    },
-
-    'processhtml': {
-        dist: {
-            files: {
-                'tmp/index.html': ['dev/index.html']
-            }
-        }
-    },
-
-    'clean': ['tmp', 'dist'],
-
+    /*
+        Cache breaker
+        Simple cache-breaker, appends a timestamp or md5 hash to any urls
+        https://www.npmjs.com/package/grunt-cache-breaker
+    */
     'cachebreaker': {
         dev: {
             options: {
                 match: ['main.min.js', 'main.css'],
             },
             files: {
-                src: ['dist/index.html']
+                src: ['<%= config.dist %>/index.html']
             }
         }
     },
 
+    /*
+        Bower copy
+        Scrupulously manage file locations for bower dependencies.
+        https://www.npmjs.com/package/grunt-bowercopy
+    */
     'bowercopy': {
         libs: {
             options: {
-                destPrefix: 'dev/assets/js/vendors'
+                destPrefix: '<%= config.dev %>/assets/js/vendors'
             },
             files: {
                 'jquery.js': 'jquery/dist/jquery.js',
@@ -137,6 +196,11 @@ grunt.initConfig({
         }
     },
 
+    /*
+        FTP Deploy
+        Grunt task for code deployment over ftp
+        https://github.com/zonak/grunt-ftp-deploy
+    */
     'ftp-deploy': {
         build: {
             auth: {
@@ -152,11 +216,16 @@ grunt.initConfig({
         }
     },
 
+    /*
+        JSHint
+        Validate files with JSHint
+        https://github.com/gruntjs/grunt-contrib-jshint
+    */
     'jshint': {
         options: {
             jshintrc: true
         },
-        all: ['Gruntfile.js', 'dev/assets/js/main.js']
+        all: ['Gruntfile.js', '<%= config.dev %>/assets/js/main.js']
     }
 
 });
@@ -187,5 +256,6 @@ grunt.registerTask('dist', ['clean', 'copy', 'uglify', 'processhtml', 'htmlmin:d
 
 // FTP
 grunt.registerTask('ftp', ['dist', 'ftp-deploy']);
+
 
 };
