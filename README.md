@@ -69,6 +69,8 @@ Entorno para hacer deploys en los servidores de producción. Dentro del proyecto
 
 * [FTP Deploy](https://github.com/zonak/grunt-ftp-deploy)
 
+***
+
 ## Hojas de estilo
 
 * [Normalize](https://necolas.github.io/normalize.css/): A modern, HTML5-ready alternative to CSS resets
