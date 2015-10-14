@@ -21,3 +21,6 @@ bower_components
 ## Distribution folders
 dist
 tmp
+
+## FTP account data
+.ftppass
