@@ -4,8 +4,8 @@ Plantilla para proyectos de animación e ilustración de Eva Santos
 
 ## Instalar dependencias
 
-	$ bower install
 	$ npm install
+	$ bower install
 
 ***
 
@@ -24,6 +24,8 @@ Entorno para trabajar en local. Dentro del proyecto, se ubica en la carpeta _dev
 * [Watch](https://www.npmjs.com/package/grunt-contrib-watch)
 
 * [Sass](https://www.npmjs.com/package/grunt-contrib-sass)
+
+* [JSHint](https://github.com/gruntjs/grunt-contrib-jshint)
 
 ***
 
@@ -58,15 +60,11 @@ Entorno para hacer deploys en los servidores de producción. Dentro del proyecto
 ### Tareas
 
 	$ grunt bowercopy
-	$ grunt jshint
 	$ grunt ftp
 
 ### Plugins
 
 * [Bowercopy](https://www.npmjs.com/package/grunt-bowercopy)
-
-* [JSHint](https://github.com/gruntjs/grunt-contrib-jshint)
-
 * [FTP Deploy](https://github.com/zonak/grunt-ftp-deploy)
 
 ***
